@@ -17,6 +17,12 @@ def manageiq_plugin(plugin_name)
   end
 end
 
+def cm_integration_plugin(plugin_name)
+  unless dependencies.detect { |d| d.name == plugin_name }
+    gem plugin_name, :git => "https://github.com/container-mgmt/#{plugin_name}", :tag => "patched-stable-20180406-0920"
+  end
+end
+
 manageiq_plugin "manageiq-providers-ansible_tower" # can't move this down yet, because we can't autoload ManageIQ::Providers::AnsibleTower::Shared
 manageiq_plugin "manageiq-schema"
 
@@ -106,7 +112,7 @@ group :hawkular, :manageiq_default do
 end
 
 group :kubernetes, :openshift, :manageiq_default do
-  manageiq_plugin "manageiq-providers-kubernetes"
+  cm_integration_plugin "manageiq-providers-kubernetes"
 end
 
 group :lenovo, :manageiq_default do
@@ -122,7 +128,7 @@ group :qpid_proton, :optional => true do
 end
 
 group :openshift, :manageiq_default do
-  manageiq_plugin "manageiq-providers-openshift"
+  cm_integration_plugin "manageiq-providers-openshift"
   gem "htauth",                         "2.0.0",         :require => false # used by container deployment
 end
 
@@ -164,7 +170,7 @@ group :replication, :manageiq_default do
 end
 
 group :rest_api, :manageiq_default do
-  manageiq_plugin "manageiq-api"
+  cm_integration_plugin "manageiq-api"
 end
 
 group :scheduler, :manageiq_default do
@@ -186,7 +192,7 @@ group :consumption, :manageiq_default do
 end
 
 group :ui_dependencies do # Added to Bundler.require in config/application.rb
-  manageiq_plugin "manageiq-ui-classic"
+  cm_integration_plugin "manageiq-ui-classic"
   # Modified gems (forked on Github)
   gem "jquery-rjs",                   "=0.1.1",                       :git => "https://github.com/ManageIQ/jquery-rjs.git", :tag => "v0.1.1-1"
 end
